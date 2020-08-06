@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+{{user_obj.first_name}}님의 마이페이지
+{% endblock page_title %}
+
+{% block content %}
+
+<div class="container lg:w-5/12 md:w-1/2 xl:w-1/4 mx-auto my-10 flex flex-col items-center border p-6 border-gray-400">
+
+    <!-------------------------------------
+    user_image 존재시 사진을  , 없으면 nickname 첫번째만 보여줌
+    overflow-hidden : 넘치는 부분은 보이지 않게함
+                -------------------------------------------->
+
+    {% include "mixins/user_image.html" with user=user_obj %}
+
+    <div class="flex items-center">
+        <span class="text-2xl mt-2 font-semibold">{{user_obj.first_name}}</span>
+  
+            {% if user_obj.is_superuser %}
+                <i class="fas fa-check-circle text-teal-400 ml-1"></i>
+            {% endif %}
+
+    </div>
+
+    <span class="font-semibold mt-2 text-lg">{{user_obj.email}}</span>
+
+    <a href="#" class="text-lg mt-3 font-bold  border-2 border-red-500 rounded-tr-lg py-px px-1">
+        프로필 수정</a>
+    <!-- {{hi}}-->
+</div>
+{% endblock content %}

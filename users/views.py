@@ -93,7 +93,7 @@ def kakao_callback(request):
             if user.login_method != models.User.LOGING_KAKAO:
                 raise KakaoException(f"로그인해주세요:{user.login_method}")
         except models.User.DoesNotExist:
-         
+
             user = models.User.objects.create(
                 email=email,
                 username=email,
@@ -122,6 +122,15 @@ def kakao_callback(request):
 
 
 class UserProfileView(DetailView):
-
     model = models.User
     context_object_name = "user_obj"
+
+    # users 모델 속성확인용
+    # print(vars(model))
+
+    # 템플릿안에 더많은 context 를 사용할수 있게해준다.
+    # get_context_data 는 기본적으로 user_obj를 준다.
+    # def get_context_data(self, **kwargs):
+    #    context = super().get_context_data(**kwargs)
+    #    context["hi"]="test"
+    #    return context

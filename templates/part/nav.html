@@ -1,8 +1,13 @@
 <ul class="flex items-center text-sm font-medium h-full">
     {% if user.is_authenticated %}
-    <li class="ml-8 font-bold" ><a href="{% url "users:logout" %}">로그아웃</a></li>
+    <li class="nav_link font-bold" >
+        <a href="{{user.get_absolute_url}}">
+           마이페이지
+        </a>
+    </li>
+    <li class="nav_link font-bold"><a href="{% url "users:logout" %}">로그아웃</a></li>
     {% else %}
-    <li class="nav_link font-bold" ><a href="{% url "users:login" %}">로그인</a></li>
-    <li class="nav_link font-bold" ><a href="{% url "users:signup" %}">회원가입</a></li>
+    <li class="nav_link font-bold"><a href="{% url "users:login" %}">로그인</a></li>
+    <li class="nav_link font-bold"><a href="{% url "users:signup" %}">회원가입</a></li>
     {% endif %}
 </ul>

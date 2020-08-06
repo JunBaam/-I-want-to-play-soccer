@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.shortcuts import reverse
 
 
 class User(AbstractUser):
@@ -21,6 +22,7 @@ class User(AbstractUser):
     login_method = models.CharField(
         max_length=50, choices=LOGIN_CHOICES, default=LOGIN_EMAIL
     )
+
 
     # user model에서 view on site 생성
     def get_absolute_url(self):

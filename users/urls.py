@@ -9,6 +9,8 @@ urlpatterns = [
     path("signup", views.SignUpView.as_view(), name="signup"),
     path("login/kakao", views.kakao_login, name="kakao-login"),
     path("login/kakao/callback", views.kakao_callback, name="kakao-callback"),
+    path("<int:pk>/", views.UserProfileView.as_view(),name="profile"),
+
 
     
 
