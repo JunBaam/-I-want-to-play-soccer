@@ -1,0 +1,38 @@
+<div>
+    <h1>{{room.name}}</h1>
+<!-- <h2>By: <a href="{{room.host.get_absolute_url}}">{{room.host.username}}</a>-->
+    <h3>{{room.info}}</h3>
+</div>
+
+<div>
+
+    <h3>가격(시간당)</h3>
+    <ul>
+        <h4>{{room.price}}원</h4>
+    </ul>
+
+    <h3>장소</h3>
+    <ul>
+        <h4>{{room.location}}</h4>
+    </ul>
+
+    <h3>전화 </h3>
+    <ul>
+        <h4>{{room.contact}}</h4>
+    </ul>
+
+    <h3>편의시설</h3>
+    <ul>
+        {% for a in room.facilities.all %}
+        <li>{{a}}</li>
+        {% endfor %}
+    </ul>
+
+    <h3>경기장 규칙</h3>
+    <ul>
+        {% for a in room.field_rules.all %}
+        <li>{{a}}</li>
+        {% endfor %}
+    </ul>
+
+</div>

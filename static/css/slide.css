@@ -1,0 +1,60 @@
+ul{
+    list-style:none;
+}
+.wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.container{
+    width:600px;
+    height:400px;
+    position: relative;
+    overflow: hidden;
+}
+.slider{
+    display: flex;
+    position:absolute;
+    top:0;
+    left:0;
+}
+.item{
+    width:100%;
+    height:500px;
+  // background-color: yellow;
+    background-image: url('/static/image/10.jpg');
+    background-size: cover;
+    background-repeat: no-repeat ;
+    font-size: 35px;
+    text-align: center;
+}
+.item:nth-child(2){
+    //background-color: green;
+    background-image: url('/static/image/축구공.jpeg');
+    background-size: cover;
+
+}
+.item:nth-child(3){
+    //background-color: blue;
+     background-image: url('/static/image/5.jpg');
+    background-size: cover;
+
+}
+.btn{
+    font-size: 40px;
+}
+.prev{
+    position:absolute;
+    top:31%;
+    left:45px;
+}
+.next{
+    position:absolute;
+    top:31%;
+    right:45px;
+}
+.container ul{
+    -webkit-transition: all 0.25s cubic-bezier(1, .01, .32, 1);
+    -o-transition: all 0.25s cubic-bezier(1, .01, .32, 1);
+    transition: all 0.25s cubic-bezier(1, .01, .32, 1);
+}

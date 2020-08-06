@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+Search
+{% endblock page_title %}
+
+{% block corona %}
+{% endblock corona %}
+
+{% block search_bar %}
+{% endblock search_bar %}
+
+
+{% block content %}
+
+<h2>Search!</h2>
+
+<form method="get" action="{% url "rooms:search" %}">
+<!--paragraph 형식으로 표현-->
+{{form.as_p}}
+<button>검색</button>
+</form>
+
+<h2>검색결과</h2>
+
+{% for room in rooms %}
+<h3>{{room.name}}</h3>
+{% endfor %}
+
+{% endblock content %}

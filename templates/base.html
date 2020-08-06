@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+
+    <!--tailwind-->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+
+    <title>{% block page_title %}{% endblock page_title %}| 축구하고싶다</title>
+    <!-- favicon.ico 404 (Not Found) -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+</head>
+
+<body class="text-gray-800 mt-24 font-light">
+<header class="container max-w-full inset-0 flex items-center justify-between px-6 h-20 border-b border-gray-400 fixed bg-white">
+
+    <div class="flex items-center">
+
+        <a href="{% url "core:home" %}" class=" w-64">
+        <img class="w-40" src="{% static 'image/logo.png' %}"/>
+        </a>
+
+         {% block corona %}
+        <div class="w-40">
+            <h3>뻐킹 코로나!</h3>
+        </div>
+        {% endblock corona %}
+
+        <!--  구장검색 -->
+        {% block search_bar %}
+
+        <form method="get" action="{% url 'rooms:search' %}" class="w-9/12 ml-2 ">
+            <input class="search-box border px-5 w-full font-medium text-gray-900 placeholder-gray-600 py-3 rounded-sm w-64 shadow-md hover:shadow-lg focus:outline-none"
+                   name="name" placeholder="구장 검색"/>
+        </form>
+
+        {% endblock search_bar %}
+    </div>
+
+    {% include "part/nav.html" %}
+</header>
+
+{% block content %}{% endblock %}
+
+<!--footer-->
+{% include "part/footer.html" %}
+
+</body>
+</html>
