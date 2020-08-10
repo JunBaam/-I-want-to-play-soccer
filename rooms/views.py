@@ -1,4 +1,5 @@
 from django.views.generic import ListView, DetailView, View, UpdateView
+from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, reverse
 from . import models, forms
 from users import models as user_models
@@ -89,5 +90,19 @@ def delete_photo(request, room_pk, photo_pk):
     except models.Room.DoesNotExist:
         return redirect(reverse("core:home"))
 
+
 # room_pk 방안에 photo_pk를 삭제해야한다.
-# print(f"삭제되야되 {photo_pk} from {room_pk}")
+# print(f"삭제 {photo_pk} from {room_pk}")
+
+class EditPhotoView(user_mixins.LoggedInOnlyView, UpdateView):
+    model = models.Photo
+    template_name = "rooms/photo_edit.html"
+    pk_url_kwarg = "photo_pk"
+    fields = {
+        "title",
+    }
+    success_url = reverse_lazy()
+
+    def get_success_url(self):
+        room_pk = self.kwargs.get("room_pk")
+        return reverse("rooms:photos", kwargs={"pk": room_pk})

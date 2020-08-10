@@ -19,11 +19,13 @@
                 </div>
                 <div class="flex flex-col w-1/5 mt-8">
                     <a class="mb-5 btn-link bg-red-600 font-semibold" href="{% url 'rooms:delete_photo' room.pk photo.pk %}">삭제</a>
-                    <a class="btn-link bg-teal-500 font-semibold " href="#">수정</a>
+                    <a class="btn-link bg-teal-500 font-semibold " href="{% url 'rooms:edit_photo' room.pk photo.pk %}">이름 변경</a>
                 </div>
 
             </div>
         {% endfor %}
-
+  <div class="flex justify-center mt-5">
+            <a href="{% url 'rooms:edit' room.pk %}" class="text-teal-500 font-semibold text-xl">뒤로가기</a>
+        </div>
     </div>
 {% endblock content %}
