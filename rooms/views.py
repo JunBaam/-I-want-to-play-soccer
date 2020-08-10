@@ -1,6 +1,9 @@
-from django.views.generic import ListView, DetailView, View
-from django.shortcuts import render
+from django.views.generic import ListView, DetailView, View, UpdateView
+from django.shortcuts import render, redirect, reverse
 from . import models, forms
+from users import models as user_models
+from users import mixins as user_mixins
+from django.contrib.auth.decorators import login_required
 
 
 class HomeView(ListView):
@@ -8,7 +11,8 @@ class HomeView(ListView):
     model = models.Room
     paginate_by = 12
 
-    ordering = "created"
+    # 정렬방식 
+    # ordering = "created"
     context_object_name = "rooms"
 
 
@@ -16,6 +20,7 @@ class RoomDetail(DetailView):
     """ RoomDetail Definition """
 
     model = models.Room
+    user = user_models.User
 
 
 # 방검색
@@ -45,3 +50,44 @@ def search(request):
             form = forms.SearchForm()
 
         return render(request, "rooms/search.html", {"form": form, "rooms": rooms})
+
+
+# 방수정
+class EditRoomView(user_mixins.LoggedInOnlyView, UpdateView):
+    model = models.Room
+    template_name = "rooms/room_edit.html"
+
+    fields = {
+        "name",
+        "info",
+        "price",
+        "contact",
+        "location",
+        "room_type",
+        "facilities",
+        "field_rules",
+    }
+
+
+class RoomPhotosView(user_mixins.LoggedInOnlyView, DetailView):
+    model = models.Room
+    template_name = "mixins/room/room_photos.html"
+
+    def get_object(self, queryset=None):
+        room = super().get_object(queryset=queryset)
+
+        return room
+
+
+@login_required
+def delete_photo(request, room_pk, photo_pk):
+    try:
+        # 방이름
+        # room = models.Room.objects.get(pk=room_pk)
+        models.Photo.objects.filter(pk=photo_pk).delete()
+        return redirect(reverse("rooms:photos", kwargs={"pk": room_pk}))
+    except models.Room.DoesNotExist:
+        return redirect(reverse("core:home"))
+
+# room_pk 방안에 photo_pk를 삭제해야한다.
+# print(f"삭제되야되 {photo_pk} from {room_pk}")

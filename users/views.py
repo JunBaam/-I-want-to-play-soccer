@@ -1,16 +1,17 @@
 import os
 import requests
+from django.contrib.auth.views import PasswordChangeView
 from django.shortcuts import render, redirect, reverse
 from django.views import View
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, logout
-from . import forms, models
+from django.contrib.messages.views import SuccessMessageMixin
+from . import forms, models, mixins
 from django.core.files.base import ContentFile
-from django.contrib import messages
 
 
-class LoginView(FormView):
+class LoginView(mixins.LoggedOutOnlyView, FormView):
     template_name = "users/login.html"
     form_class = forms.LoginForm
     success_url = reverse_lazy("core:home")
@@ -29,7 +30,7 @@ def log_out(request):
     return redirect(reverse("core:home"))
 
 
-class SignUpView(FormView):
+class SignUpView(mixins.LoggedOutOnlyView, FormView):
     template_name = "users/signup.html"
     form_class = forms.SignUpForm
     success_url = reverse_lazy("core:home")
@@ -46,7 +47,6 @@ class SignUpView(FormView):
 
 def kakao_login(request):
     client_id = os.environ.get("KAKAO")
-    print(client_id)
     redirect_uri = "http://15.165.223.171:8000/users/login/kakao/callback"
     return redirect(
         f"https://kauth.kakao.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&response_type=code"
@@ -81,7 +81,7 @@ def kakao_callback(request):
         # print(profile_request.json())
         profile_json = profile_request.json()
         email = profile_json.get("kakao_account").get("email")
-        # print(email)
+
         if email is None:
             raise KakaoException("이메일을 제공해주세요.")
         properties = profile_json.get("properties")
@@ -93,7 +93,6 @@ def kakao_callback(request):
             if user.login_method != models.User.LOGING_KAKAO:
                 raise KakaoException(f"로그인해주세요:{user.login_method}")
         except models.User.DoesNotExist:
-
             user = models.User.objects.create(
                 email=email,
                 username=email,
@@ -106,8 +105,8 @@ def kakao_callback(request):
 
             # 프로필 이미지 확인
             if profile_image is not None:
-                # print(profile_image)
-                # print(requests.get(profile_image))
+                print(profile_image)
+                print(requests.get(profile_image))
                 photo_request = requests.get(profile_image)
                 # content() : 0,1만 있는 파일 //바이트파일
                 user.user_image.save(
@@ -134,3 +133,53 @@ class UserProfileView(DetailView):
     #    context = super().get_context_data(**kwargs)
     #    context["hi"]="test"
     #    return context
+
+
+# UpdateView : 모델 또는 객체를 가져옴 , Form 도 만들어준다.
+class UpdateProfileView(SuccessMessageMixin, UpdateView):
+    model = models.User
+    template_name = "users/update_profile.html"
+    fields = (
+        "first_name",
+        "last_name",
+        "user_image",
+    )
+
+    # 수정하고 싶어하는 객체를 반환한다.
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["first_name"].widget.attrs = {"placeholder": "First name"}
+        return form
+
+
+"""
+ def form_valid(self, form):
+     email = form.cleaned_data.get("email")
+
+     self.object.username = email
+     self.object.save()
+     return super().form_valid(form)
+ """
+
+
+# PasswordChangeView : 디폴트는 admin 비밀번호 변경페이지로 보내버림
+# 1.현재비밀번호 2.새로운비밀번호 3.비밀번호검증
+# 번경시(성공시) 반드시 password_change_done 이라는 url로 가야됨
+class UpdatePasswordView(SuccessMessageMixin, PasswordChangeView):
+    template_name = "users/update_password.html"
+    success_url = reverse_lazy("")
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields["old_password"].widget.attrs = {"placeholder": "현재 비밀번호"}
+        form.fields["new_password1"].widget.attrs = {"placeholder": "새로운 비밀번호"}
+        form.fields["new_password2"].widget.attrs = {
+            "placeholder": "새로운 비밀번호 확인"
+        }
+        return form
+
+    def get_success_url(self):
+        return self.request.user.get_absolute_url()

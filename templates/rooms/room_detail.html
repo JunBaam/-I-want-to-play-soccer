@@ -1,37 +1,115 @@
-<div>
-    <h1>{{room.name}}</h1>
-    <h3>{{room.info}}</h3>
+{% extends "base.html" %}
+{% block page_title %}
+{{room.name}}
+{% endblock page_title %}
+
+{% block content %}
+
+
+<div class="-mt-5 container max-w-full h-75vh flex mb-20">
+    <div class="h-full w-1/2 bg-center bg-cover" style="background-image:url({{room.first_photo}})"></div>
+    <div class="h-full w-1/2 flex flex-wrap">
+        {% for photo in room.get_next_four_photos %}
+        <div style="background-image:url({{photo.file.url}})"
+             class="w-1/2 h-auto bg-cover bg-center border-gray-700 border"></div>
+        {% endfor %}
+    </div>
+</div>
+<div class="container mx-auto flex justify-around pb-56">
+    <div class="w-1/2">
+        <div class="flex justify-between">
+            <div class="mb-5">
+                <h4 class="text-3xl font-medium mb-px">{{room.name}}</h4>
+
+            </div>
+            <a href="{{room.host.get_absolute_url}}" class="flex flex-col items-center">
+                <span class="mt-2 text-gray-500">{{room.host.first_name}}</span>
+            </a>
+        </div>
+        <div class="flex border-section">
+            <span class="font-semibold border-2 border-red-400 mr-5 rounded-xl py-px px-1 font-light">{{room.room_type}}</span>
+            <span class="font-semibold border-2 border-gray-400 mr-5 rounded-xl py-px px-1 font-light">{{room.location}}</span>
+            <span class="font-semibold border-2 border-orange-400 mr-5 rounded-xl py-px px-1 font-light">시간당가격 : {{room.price}}원</span>
+            <span class="font-semibold border-2 border-blue-300 mr-5 rounded-xl py-px px-1 font-light">문의사항 : {{room.contact}}</span>
+        </div>
+
+        <p class="border-section">
+            {{room.info}}
+        </p>
+
+  <div class="border-section">
+                <h4 class="font-medium text-lg mb-5">편의시설</h4>
+                {% for a in room.facilities.all %}
+                    <li class="mb-2">{{a}}</li>
+                {% endfor %}
+            </div>
+
+            <div class="border-section">
+                <h4 class="font-medium text-lg mb-5">경기장 규칙</h4>
+                     {% for a in room.field_rules.all %}
+                    <li class="mb-2">{{a}}</li>
+                {% endfor %}
+            </div>
+
+        <!-- 지도 넣기 -->
+          <div class="border-section">
+                <h4 class="font-medium text-lg mb-5">경기장 위치</h4>
+
+              {{room.location}}
+
+            </div>
+
+
+           <div class="mt-10">
+                <h4 class="font-medium text-2xl mb-5">후기</h4>
+                    <div class="flex items-center">
+                         <div>
+                        <span class="font-bold text-lg">경기장 후기({{room.reviews.count}})</span>
+
+                        <!--<span>{{room.reviews.count|pluralize}}</span>
+                                복수표기    -->
+                    </div>
+                             <div class="h-4 w-px bg-gray-400 mx-5"></div>
+                    <div>
+                        <i class="fas fa-star text-red-500"></i>
+                        <span class="font-bold text-xl">{{room.total_rating}}</span>
+                    </div>
+
+
+                </div>
+
+                <div class="mt-10">
+                    {% for review in room.reviews.all  %}
+                        <div class="border-section">
+                            <div class="mb-3 flex">
+                                <div>
+                                    {% include "mixins/user_image.html" with user=review.user h_and_w='w-10 h-10' text='text-xl' %}
+                                </div>
+                                <div class="flex flex-col ml-5">
+                                    <span class="font-medium">{{review.user.first_name}}</span>
+                                    <span class="text-sm text-gray-500">{{review.created|date:'F Y'}}</span>
+                                </div>
+                            </div>
+                            <p>{{review.review}}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+    </div>
+
+    <div class="w-1/3">
+   <!----------------------------------
+        관리자 계정일 경우만 경기수정버튼 표시
+            ---------------------------------->
+   {% if user.is_superuser %}
+
+        <a href="{% url 'rooms:edit' room.pk %}" class="rounded-xl py-3 font-semibold bg-red-500 text-white text-lg w-full text-center block ">경기장 수정</a>
+{% endif %}
+    </div>
+
+
 </div>
 
-<div>
 
-    <h3>가격(시간당)</h3>
-    <ul>
-        <h4>{{room.price}}원</h4>
-    </ul>
 
-    <h3>장소</h3>
-    <ul>
-        <h4>{{room.location}}</h4>
-    </ul>
-
-    <h3>전화 </h3>
-    <ul>
-        <h4>{{room.contact}}</h4>
-    </ul>
-
-    <h3>편의시설</h3>
-    <ul>
-        {% for a in room.facilities.all %}
-        <li>{{a}}</li>
-        {% endfor %}
-    </ul>
-
-    <h3>경기장 규칙</h3>
-    <ul>
-        {% for a in room.field_rules.all %}
-        <li>{{a}}</li>
-        {% endfor %}
-    </ul>
-
-</div>
+{% endblock %}
