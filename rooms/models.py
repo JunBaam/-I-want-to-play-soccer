@@ -64,9 +64,9 @@ class Room(core_models.TimeStampedModel):
     name = models.CharField(max_length=50)
     info = models.TextField()
     price = models.IntegerField()
-    date = models.DateField()
-    check_in = models.TimeField()
-    check_out = models.TimeField()
+    date = models.DateField(blank=True,null=True)
+    check_in = models.TimeField(blank=True, null=True)
+    check_out = models.TimeField(blank=True ,null=True)
     contact = models.CharField(max_length=50)
     location = models.CharField(max_length=150)
     # room_type 삭제시 Room 을 보존
@@ -106,8 +106,11 @@ class Room(core_models.TimeStampedModel):
 
     # 방의 첫번째 사진만 보여줌
     def first_photo(self):
-        photo, = self.photos.all()[:1]
-        return photo.file.url
+        try:
+            photo, = self.photos.all()[:1]
+            return photo.file.url
+        except ValueError:
+            return None
 
     def get_next_four_photos(self):
         photos = self.photos.all()[1:5]

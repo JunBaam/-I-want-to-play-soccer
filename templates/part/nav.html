@@ -1,10 +1,12 @@
 <ul class="flex items-center text-sm font-medium h-full">
     {% if user.is_authenticated %}
-    <li class="nav_link font-bold" >
-        <a href="{{user.get_absolute_url}}">
-           마이페이지
-        </a>
-    </li>
+
+    {% if user.is_superuser %}
+
+    <li class="nav_link font-bold" ><a href="{% url "rooms:create" %}">방생성</a></li>
+
+    {% endif %}
+    <li class="nav_link font-bold" ><a href="{{user.get_absolute_url}}">마이페이지</a></li>
     <li class="nav_link font-bold" ><a href="{% url "users:logout" %}">로그아웃</a></li>
     {% else %}
     <li class="nav_link font-bold"><a href="{% url "users:login" %}">로그인</a></li>
