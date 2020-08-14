@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% load test_filter %}
+{% load static %}
 {% block page_title %}
 {{room.name}}
 {% endblock page_title %}
@@ -28,7 +30,7 @@
         </div>
         <div class="flex border-section">
             <span class="font-semibold border-2 border-red-400 mr-5 rounded-xl py-px px-1 font-light">{{room.room_type}}</span>
-            <span class="font-semibold border-2 border-gray-400 mr-5 rounded-xl py-px px-1 font-light">{{room.location}}</span>
+            <span class="font-semibold border-2 border-teal-300 mr-5 rounded-xl py-px px-1 font-light">{{room.district}}</span>
             <span class="font-semibold border-2 border-orange-400 mr-5 rounded-xl py-px px-1 font-light">시간당가격 : {{room.price}}원</span>
             <span class="font-semibold border-2 border-blue-300 mr-5 rounded-xl py-px px-1 font-light">문의사항 : {{room.contact}}</span>
         </div>
@@ -37,79 +39,144 @@
             {{room.info}}
         </p>
 
-  <div class="border-section">
-                <h4 class="font-medium text-lg mb-5">편의시설</h4>
-                {% for a in room.facilities.all %}
-                    <li class="mb-2">{{a}}</li>
-                {% endfor %}
-            </div>
+        <div class="border-section">
+            <h4 class="font-medium text-lg mb-5">편의시설</h4>
+            {% for a in room.facilities.all %}
+            <li class="mb-2">{{a}}</li>
+            {% endfor %}
+        </div>
 
-            <div class="border-section">
-                <h4 class="font-medium text-lg mb-5">경기장 규칙</h4>
-                     {% for a in room.field_rules.all %}
-                    <li class="mb-2">{{a}}</li>
-                {% endfor %}
-            </div>
+        <div class="border-section">
+            <h4 class="font-medium text-lg mb-5">경기장 규칙</h4>
+            {% for a in room.field_rules.all %}
+            <li class="mb-2">{{a}}</li>
+            {% endfor %}
+        </div>
 
         <!-- 지도 넣기 -->
-          <div class="border-section">
-                <h4 class="font-medium text-lg mb-5">경기장 위치</h4>
+        <div class="border-section">
+            <h4 class="font-medium text-lg mb-5">경기장 위치</h4>
+            <h3 class="font-medium mb-3 ">주소:{{room.location}}
+            <a class="font-semibold border-2 border-red-400 mr-5 rounded-xl py-px px-1 font-light "  target="_blank" href="https://map.kakao.com/link/search/{{room.location}} ">길찾기 / 더보기</a>
+                </h3>
+            <div id="map" style="width:500px;height:400px;"></div>
+            <!--<script src="{% static "js/map.js" %}"> </script>-->
 
-              {{room.location}}
+            <script>
+                var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+                    mapOption = {
+                        center: new kakao.maps.LatLng(36.0701, 127.570667), // 지도의 중심좌표
+                        level: 4 // 지도의 확대 레벨
+                    };
 
+                // 지도를 생성합니다
+                var map = new kakao.maps.Map(mapContainer, mapOption);
+
+                // 주소-좌표 변환 객체를 생성합니다
+                var geocoder = new kakao.maps.services.Geocoder();
+
+                // 주소로 좌표를 검색합니다
+                geocoder.addressSearch('{{room.location}}', function (result, status) {
+
+                    // 정상적으로 검색이 완료됐으면
+                    if (status === kakao.maps.services.Status.OK) {
+
+                        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                        console.log(coords);
+                        // 결과값으로 받은 위치를 마커로 표시합니다
+                        var marker = new kakao.maps.Marker({
+                            map: map,
+                            position: coords
+                        });
+
+                        // 인포윈도우로 장소에 대한 설명을 표시합니다 <div style="width:150px;text-align:center;padding:6px 0;">
+                        //var infowindow = new kakao.maps.InfoWindow({
+                        //    content: '<div class="w-full ml-4 font-semibold text-align-middle">{{room.name}}</div>'
+                        // });
+                        // infowindow.open(map, marker);
+
+                        // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                        map.setCenter(coords);
+                    }
+                });
+            </script>
+
+        </div>
+
+        <div class="mt-10">
+            <h4 class="font-medium text-2xl mb-5">후기</h4>
+            <div class="flex items-center">
+                <div>
+                    <span class="font-bold text-lg">경기장 후기({{room.reviews.count}})</span>
+                    <!--<span>{{room.reviews.count|pluralize}}</span>
+                            복수표기    -->
+                </div>
+                <div class="h-4 w-px bg-gray-400 mx-5"></div>
+                <div>
+                    <i class="fas fa-star text-red-500"></i>
+                    <span class="font-bold text-xl">{{room.total_rating}}</span>
+                </div>
             </div>
 
-
-           <div class="mt-10">
-                <h4 class="font-medium text-2xl mb-5">후기</h4>
-                    <div class="flex items-center">
-                         <div>
-                        <span class="font-bold text-lg">경기장 후기({{room.reviews.count}})</span>
-
-                        <!--<span>{{room.reviews.count|pluralize}}</span>
-                                복수표기    -->
-                    </div>
-                             <div class="h-4 w-px bg-gray-400 mx-5"></div>
-                    <div>
-                        <i class="fas fa-star text-red-500"></i>
-                        <span class="font-bold text-xl">{{room.total_rating}}</span>
-                    </div>
-
-
-                </div>
-
-                <div class="mt-10">
-                    {% for review in room.reviews.all  %}
-                        <div class="border-section">
-                            <div class="mb-3 flex">
-                                <div>
-                                    {% include "mixins/user_image.html" with user=review.user h_and_w='w-10 h-10' text='text-xl' %}
-                                </div>
-                                <div class="flex flex-col ml-5">
-                                    <span class="font-medium">{{review.user.first_name}}</span>
-                                    <span class="text-sm text-gray-500">{{review.created|date:'F Y'}}</span>
-                                </div>
-                            </div>
-                            <p>{{review.review}}</p>
+            <div class="mt-10">
+                {% for review in room.reviews.all %}
+                <div class="border-section">
+                    <div class="mb-3 flex">
+                        <div>
+                            {% include "mixins/user_image.html" with user=review.user h_and_w='w-10
+                            h-10'text='text-xl'%}
                         </div>
-                    {% endfor %}
+                        <div class="flex flex-col ml-5">
+                            <span class="font-medium">{{review.user.first_name}}</span>
+                            <span class="text-sm text-gray-500">{{review.created|date:'F Y'}}</span>
+                        </div>
+                    </div>
+                    <p>{{review.review}}</p>
                 </div>
+                {% endfor %}
             </div>
+        </div>
     </div>
 
     <div class="w-1/3">
-   <!----------------------------------
-        관리자 계정일 경우만 경기수정버튼 표시
-            ---------------------------------->
-   {% if user.is_superuser %}
+        <!----------------------------------
+             관리자 계정일 경우 : 경기수정버튼
+             그 외  유져       : 달력표시
+                 ---------------------------------->
+        {% if user.is_superuser %}
 
-        <a href="{% url 'rooms:edit' room.pk %}" class="rounded-xl py-3 font-semibold bg-red-500 text-white text-lg w-full text-center block ">경기장 수정</a>
-{% endif %}
+        <a href="{% url 'rooms:edit' room.pk %}"
+           class="rounded-xl py-3 font-semibold bg-red-500 text-white text-lg w-full text-center block ">경기장 수정</a>
+        {% else %}
+        <!-- {'something'|filtertt}}-->
+        {% for calendar in room.get_calendars %}
+        <div class="mb-20">
+
+            <span class="text-center font-semibold text-lg block mb-8">{{calendar.year}}.{{calendar.get_month}}  </span>
+            <div class="cal-grid font-medium mb-4">
+                {% for day in calendar.day_names %}
+                <span>{{day}}</span>
+                {% endfor %}
+            </div>
+
+            <div class="cal-grid">
+                {% for day in calendar.get_days %}
+                <!-- 여기서 day 는 숫자가 아니라 함수!-->
+                {% if day.number != 0 %}
+                {% if day.past %}
+                <span class="rounded bg-gray-200 w-full text-center p-1 text-gray-300 ">{{day}}</span>
+                {% else %}
+                <span class="bg-gray-200 w-full text-center rounded text-gray-700 p-1 hover:bg-red-400 hover:text-white hover:font-medium cursor-pointer">{{day}}</span>
+                {% endif %}
+                {% else %}
+                <!--공백부분-->
+                <span></span>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
     </div>
-
-
 </div>
-
-
-
 {% endblock %}

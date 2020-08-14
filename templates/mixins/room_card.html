@@ -8,8 +8,11 @@
         <div class="flex justify-between mb-2 truncate">
 
             <div class="w-4/5 overflow-hidden flex">
-               <span class="mr-2 uppercase font-medium text-sm border-2 border-red-500 text-black rounded py-px px-1">
-                 {{room.location}}
+               <span class="mr-2 uppercase font-semibold text-sm border-2 border-red-400 text-black rounded py-px px-1">
+                 {{room.district}}
+                </span>
+                <span class="mr-2 uppercase font-semibold text-sm border-2 border-teal-300 text-black rounded py-px px-1">
+                {{room.room_type}}
                 </span>
             </div>
             <!------
@@ -20,7 +23,7 @@
             </span>
         </div>
 
-        <span class="text-black w-11/12 block truncate">
+        <span class="font-bold text-black w-11/12 block truncate">
             {{room.name}}
         </span>
     </a>
