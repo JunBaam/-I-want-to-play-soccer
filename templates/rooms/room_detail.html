@@ -35,9 +35,41 @@
             <span class="font-semibold border-2 border-blue-300 mr-5 rounded-xl py-px px-1 font-light">문의사항 : {{room.contact}}</span>
         </div>
 
-        <p class="border-section">
+
+        <div class="border-section">
+            <h4 class="font-medium text-lg mb-5">구장소개</h4>
             {{room.info}}
-        </p>
+        </div>
+
+        <div class="border-section">
+            <h4 class="font-medium text-lg mb-1">날씨정보 ({{room.get_weather.1}}) </h4>
+
+            <span class="text-4xl font-bold mb-1 ">
+                {{room.get_weather.0}}
+            </span>
+            <br>
+
+            <span class="text-lg  font-semibold ">
+                {{room.get_weather.4}}!!!
+
+            </span>
+             <br>
+
+
+            <span class="font-semibold text-lg ">
+                             미세먼지:{{room.get_weather.2}}
+            </span>
+
+            <span class="font-semibold text-lg ml-2">
+                초미세먼지:{{room.get_weather.3}}
+            </span>
+
+
+            <!--<img class="float-right mr-32" src="{% static 'image/보통.png' %}"/>-->
+
+            <img class="mt-1" src="/static/image/미세.png">
+        </div>
+
 
         <div class="border-section">
             <h4 class="font-medium text-lg mb-5">편의시설</h4>
@@ -55,10 +87,12 @@
 
         <!-- 지도 넣기 -->
         <div class="border-section">
-            <h4 class="font-medium text-lg mb-5">경기장 위치</h4>
-            <h3 class="font-medium mb-3 ">주소:{{room.location}}
-            <a class="font-semibold border-2 border-red-400 mr-5 rounded-xl py-px px-1 font-light "  target="_blank" href="https://map.kakao.com/link/search/{{room.location}} ">길찾기 / 더보기</a>
-                </h3>
+            <div class="font-medium text-lg mb-3">경기장 위치
+                <a class="ml-2 font-semibold text-sm border-2 border-red-400 mr-5 rounded-xl py-px px-1  "
+                   target="_blank"
+                   href="https://map.kakao.com/link/search/{{room.location}} ">길찾기 / 더보기</a>
+            </div>
+            <h3 class="font-medium mb-3 ">{{room.location}}</h3>
             <div id="map" style="width:500px;height:400px;"></div>
             <!--<script src="{% static "js/map.js" %}"> </script>-->
 
@@ -100,7 +134,6 @@
                     }
                 });
             </script>
-
         </div>
 
         <div class="mt-10">
@@ -144,15 +177,16 @@
              그 외  유져       : 달력표시
                  ---------------------------------->
         {% if user.is_superuser %}
-
         <a href="{% url 'rooms:edit' room.pk %}"
            class="rounded-xl py-3 font-semibold bg-red-500 text-white text-lg w-full text-center block ">경기장 수정</a>
         {% else %}
+
         <!-- {'something'|filtertt}}-->
         {% for calendar in room.get_calendars %}
         <div class="mb-20">
-
-            <span class="text-center font-semibold text-lg block mb-8">{{calendar.year}}.{{calendar.get_month}}  </span>
+            <span class="text-center font-semibold text-lg block mb-8">
+                {{calendar.year}}.{{calendar.get_month}}
+            </span>
             <div class="cal-grid font-medium mb-4">
                 {% for day in calendar.day_names %}
                 <span>{{day}}</span>

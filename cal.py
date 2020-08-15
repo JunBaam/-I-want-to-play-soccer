@@ -7,7 +7,6 @@ class Day:
         self.number = number
         self.past = past
 
-
     def __str__(self):
         return str(self.number)
 
@@ -26,7 +25,7 @@ class Calendar(calendar.Calendar):
         for week in weeks:
             for day, _ in week:
                 now = timezone.now()
-                today = now.day    # 11일
+                today = now.day  # 11일
                 month = now.month  # 8월
                 past = False
                 if month == self.month:

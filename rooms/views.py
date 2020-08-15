@@ -7,6 +7,7 @@ from users import mixins as user_mixins
 from django.contrib.auth.decorators import login_required
 
 
+
 class HomeView(ListView):
     """ HomeView Definition """
     model = models.Room
@@ -109,7 +110,6 @@ class EditPhotoView(user_mixins.LoggedInOnlyView, UpdateView):
 
 
 class AddPhotoView(user_mixins.LoggedInOnlyView, FormView):
-
     template_name = "rooms/photo_create.html"
     form_class = forms.CreatePhotoForm
 
@@ -120,7 +120,6 @@ class AddPhotoView(user_mixins.LoggedInOnlyView, FormView):
 
 
 class CreateRoomView(user_mixins.LoggedInOnlyView, FormView):
-
     form_class = forms.CreateRoomForm
     template_name = "rooms/room_create.html"
 
@@ -131,3 +130,5 @@ class CreateRoomView(user_mixins.LoggedInOnlyView, FormView):
         # save_m2m : 다대다 관계를 저장하려면 DB에 값이저장된후 저장해야됨
         form.save_m2m()
         return redirect(reverse("rooms:detail", kwargs={"pk": room.pk}))
+
+

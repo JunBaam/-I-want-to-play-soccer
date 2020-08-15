@@ -4,6 +4,8 @@ from django.urls import reverse
 from core import models as core_models
 from users import models as user_models
 from cal import Calendar
+from bs4 import BeautifulSoup
+import requests
 
 
 class AbstractItem(core_models.TimeStampedModel):
@@ -131,4 +133,26 @@ class Room(core_models.TimeStampedModel):
             next_month = 1
         this_month_cal = Calendar(this_year, this_month)
         next_month_cal = Calendar(this_year, next_month)
+
         return [this_month_cal, next_month_cal]
+
+    def get_weather(self):
+        district = self.district
+        html = requests.get('https://search.naver.com/search.naver?query=날씨' + district)
+        soup = BeautifulSoup(html.text, 'html.parser')
+        data1 = soup.find('div', {'class': 'weather_box'})
+        # 구장위치
+        find_address = data1.find('span', {'class': 'btn_select'}).text
+        # 온도
+        find_currenttemp = data1.find('span', {'class': 'todaytemp'}).string+"℃"
+        data2 = data1.findAll('dd')
+        # 미세먼지
+        find_dust = data2[0].find('span', {'class': 'num'}).string
+        # 초미세먼지
+        find_ultra_dust = data2[1].find('span', {'class': 'num'}).string
+        # 현재상태
+        find_currentstate = data1.find('p', {'class': 'cast_txt'}).text
+
+        return [find_currenttemp, find_address, find_dust, find_ultra_dust, find_currentstate]
+
+
